@@ -1,0 +1,2 @@
+v0.1.1a1, 2016-08-19 -- Initial release : renames the django-auth-ldap-ad to django_auth_ldap_ad to import it directly as package
+
