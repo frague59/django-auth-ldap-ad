@@ -84,7 +84,7 @@ def find_package_data(where='.', package='',
 
 # Main setup function
 setup(name='django-auth-ldap-ad',
-      version='0.1.0a1',
+      version='0.1.0a2',
       description='Authentication backend for django applications through Microsoft Active Directory',
       packages=find_packages(),
       package_data=find_package_data(),
