@@ -4,7 +4,7 @@ python:
   - "3.4"
   - "3.5"
 install:
-  - "pip install -U ldap mockldap"
+  - "pip install -U ldap3 mockldap"
   - "pip install ."
 script: python setup.py test
 
