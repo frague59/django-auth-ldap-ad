@@ -1,2 +1,2 @@
 include .txt .rst
-recursive-include django_auth_ldap_ad .py .txt .html .css .js .sh .markdown .md .json
+recursive-include django_ldap_ad .py .txt .html .css .js .sh .markdown .md .json
