@@ -28,8 +28,9 @@ setup(
                  'Programming Language :: Python',
                  'Topic :: System :: Systems Administration :: Authentication/Directory :: LDAP',
                  ],
-    install_requires=['Django', 'django-appconf', 'ldap3'],
-
+    install_requires=['Django',
+                      'django-appconf',
+                      'ldap'],
     # Source files
     packages=find_packages('.'),
 

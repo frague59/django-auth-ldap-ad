@@ -1,0 +1,3 @@
+Django
+ldap
+django-appconf
