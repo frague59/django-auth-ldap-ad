@@ -48,7 +48,7 @@ sonar:
   - sonar
 
 # Builds wheel and upload to pypi
-release_tag:
+release_pypi:
   stage: build
   before_script:
   - pip install --cache-dir .pip/ --upgrade --requirement requirements/release.txt
@@ -65,7 +65,7 @@ release_tag:
     - tags
 
 # Builds wheel and upload to pypitest
-release_test:
+release_pypitest:
   stage: build
   before_script:
   - pip install --cache-dir .pip/ --upgrade --requirement requirements/release.txt
