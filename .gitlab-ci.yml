@@ -80,29 +80,29 @@ release_test:
     - .pip/
 
 # Builds sphinx docs
-pages:
-  stage: build
-  before_script:
-  - test ! -d .pip && mkdir .pip
-  - if [[ -f requirements/common.txt ]] && [[ -f requirements/constraints.txt ]]; then
-  -     pip install --cache-dir .pip/
-          --requirement requirements/common.txt --constraint requirements/constraints.txt;
-  - fi
-  - pip install --cache-dir .pip/
-      --requirement requirements/docs.txt --constraint requirements/constraints.txt
-  script:
-  # Builds docs
-  - cd docs
-  - test $DEBUG_SPHINX -eq 1 && ls -la
-  - make html
-  - cd ..
-
-  # Copy built files to /public
-  - mv docs/build/html/ public/
-  artifacts:
-    paths:
-    - public/
-
-  cache:
-    paths:
-    - .pip/
+#pages:
+#  stage: build
+#  before_script:
+#  - test ! -d .pip && mkdir .pip
+#  - if [[ -f requirements/common.txt ]] && [[ -f requirements/constraints.txt ]]; then
+#  -     pip install --cache-dir .pip/
+#          --requirement requirements/common.txt --constraint requirements/constraints.txt;
+#  - fi
+#  - pip install --cache-dir .pip/
+#      --requirement requirements/docs.txt --constraint requirements/constraints.txt
+#  script:
+#  # Builds docs
+#  - cd docs
+#  - test $DEBUG_SPHINX -eq 1 && ls -la
+#  - make html
+#  - cd ..
+#
+#  # Copy built files to /public
+#  - mv docs/build/html/ public/
+#  artifacts:
+#    paths:
+#    - public/
+#
+#  cache:
+#    paths:
+#    - .pip/
