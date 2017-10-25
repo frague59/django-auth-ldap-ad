@@ -1,0 +1,108 @@
+image: python:3.5-jessie
+
+stages:
+  - build
+  - sonar
+
+variables:
+  SCANER_VERSION: 3.0.3.778-linux
+  DEBUG_BEFORE: 0
+  DEBUG_SONAR: 1
+  DEBUG_SPHINX: 0
+  SONAR_HOST: "http://sonarqube.ville.tg/"
+
+sonar:
+  stage: sonar
+  before_script:
+  - apt-get --yes -qq update && apt-get --yes -qq install zip
+  # Installs sonar-runner ZIP file
+  - if [[ ! -d sonar-scanner-$SCANER_VERSION ]]; then
+  -     wget --no-verbose https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SCANER_VERSION.zip
+  -     unzip -q sonar-scanner-cli-$SCANER_VERSION.zip
+  - fi
+  - sonar-scanner-$SCANER_VERSION/bin/sonar-scanner --version
+  # Installs pip requirements
+  - test ! -d .pip && mkdir .pip
+  - if [[ -f requirements/common.txt ]] && [[ -f requirements/constraints.txt ]]; then
+  -     pip install --cache-dir .pip/
+          --requirement requirements/common.txt --constraint requirements/constraints.txt;
+  - fi
+  - pip install --cache-dir .pip/
+      --requirement requirements/sonar.txt --constraint requirements/constraints.txt
+
+  script:
+  # Runs the sonar-runner
+  - test ${DEBUG_SONAR} -eq 1 && pylint --version
+  - export SONAR_SCANNER_OPTS="-Xmx512m"
+  - export SONAR_USER_HOME=.
+  - sonar-scanner-$SCANER_VERSION/bin/sonar-scanner -Dsonar.host.url=$SONAR_HOST
+
+  cache:
+    paths:
+    - sonar-scanner-cli-$SCANER_VERSION.zip
+    - sonar-scanner-$SCANER_VERSION/
+    - .scannerwork/
+    - .pip/
+
+  tags:
+  - sonar
+
+# Builds wheel and upload to pypi
+release_tag:
+  stage: build
+  before_script:
+  - pip install --cache-dir .pip/ --upgrade --requirement requirements/release.txt
+  script:
+  - python3 setup.py bdist_wheel
+  - twine upload --config-file ./.pypirc --repository pypi --skip-existing dist/*
+  artifacts:
+    paths:
+    - dist/
+  cache:
+    paths:
+    - .pip/
+  only:
+    - tags
+
+# Builds wheel and upload to pypitest
+release_test:
+  stage: build
+  before_script:
+  - pip install --cache-dir .pip/ --upgrade --requirement requirements/release.txt
+  script:
+  - python3 setup.py bdist_wheel
+  - twine upload --config-file ./.pypirc --repository pypitest --skip-existing dist/*
+  artifacts:
+    paths:
+    - dist/
+  cache:
+    paths:
+    - .pip/
+
+# Builds sphinx docs
+pages:
+  stage: build
+  before_script:
+  - test ! -d .pip && mkdir .pip
+  - if [[ -f requirements/common.txt ]] && [[ -f requirements/constraints.txt ]]; then
+  -     pip install --cache-dir .pip/
+          --requirement requirements/common.txt --constraint requirements/constraints.txt;
+  - fi
+  - pip install --cache-dir .pip/
+      --requirement requirements/docs.txt --constraint requirements/constraints.txt
+  script:
+  # Builds docs
+  - cd docs
+  - test $DEBUG_SPHINX -eq 1 && ls -la
+  - make html
+  - cd ..
+
+  # Copy built files to /public
+  - mv docs/build/html/ public/
+  artifacts:
+    paths:
+    - public/
+
+  cache:
+    paths:
+    - .pip/
